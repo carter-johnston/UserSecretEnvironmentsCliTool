@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "UserSecretEnvironments.Cli": {
+      "commandName": "Project",
+      "commandLineArgs": "menu"
+    }
+  }
+}
