@@ -73,7 +73,7 @@ public class UserSecretEnvironmentManager
         return initializationResult;
     }
 
-    public static UserSecretEnvironmentOperationResult UseEnvironment(string environmentName)
+    public static UserSecretEnvironmentOperationResult UseEnvironment(string? environmentName)
     {
         var projectFile = DirectoryUtil.GetLocalProjectFilePath();
 
@@ -92,7 +92,14 @@ public class UserSecretEnvironmentManager
         var userSecretParentId = userSecretId.Split('_').First();
 
         var appDataPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
+        
         var selectedUserSecretValue = $"{userSecretParentId}_{environmentName}";
+        
+        if (string.IsNullOrEmpty(environmentName))
+        {
+            selectedUserSecretValue += "_" + environmentName;
+        }
+
         var userSecretsPath = appDataPath + $"/Microsoft/UserSecrets/{selectedUserSecretValue}/secrets.json";
 
         if (!File.Exists(userSecretsPath))

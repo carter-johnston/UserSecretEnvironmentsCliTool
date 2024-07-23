@@ -5,14 +5,6 @@ using static UserSecretEnvironments.Core.UserSecretEnvironmentManager;
 
 var app = CoconaApp.Create();
 
-var menuOptions = new[] {
-    "Show all environments.",
-    "Show selected environment.",
-    "Select an environment.",
-    "Open editor for selected environment.",
-    "Exit."
-};
-
 app.AddCommand("init", (string[]? environmentNames) => 
     {
         Console.WriteLine($"creates default empty environments.");
@@ -24,7 +16,7 @@ app.AddCommand("init", (string[]? environmentNames) =>
             : InitializeDefaultEnvironments();
     });
 
-app.AddCommand("use", ([Argument] string environmentName) => 
+app.AddCommand("use", ([Argument] string? environmentName) => 
     {
         var result = UseEnvironment(environmentName);
 
