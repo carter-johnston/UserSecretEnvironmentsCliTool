@@ -1,5 +1,7 @@
 ﻿using Cocona;
+using Spectre.Console;
 using UserSecretEnvironments.Core;
+using static UserSecretEnvironments.Core.UserSecretEnvironmentManager;
 
 var app = CoconaApp.Create();
 
@@ -14,79 +16,55 @@ var menuOptions = new[] {
 app.AddCommand("init", (string[]? environmentNames) => 
     {
         Console.WriteLine($"creates default empty environments.");
-        UserSecretEnvironmentManager.Initialize();
+
+        var environmentNamesSpecified = environmentNames != null && environmentNames.Length > 0;
+
+        var result = environmentNamesSpecified 
+            ? InitializeEnvironments(environmentNames!)
+            : InitializeDefaultEnvironments();
     });
 
 app.AddCommand("use", ([Argument] string environmentName) => 
     {
-        Console.WriteLine($"switch to this {environmentName}");
-        UserSecretEnvironmentManager.UseEnvironment(environmentName);
+        var result = UseEnvironment(environmentName);
+
+        if (result.Equals(UserSecretEnvironmentOperationResult.Success))
+            AnsiConsole.MarkupLine($"User Secret Environment switched to [white][[[green]{environmentName.ToUpper()}[/]]][/]");
+        else
+            AnsiConsole.MarkupLine($"[yellow]Something Went Wrong![/]");
     });
 
 app.AddCommand("list", () => 
     {
         Console.WriteLine("List all environment groups for a given project file.");
 
-        foreach (var filePath in UserSecretEnvironmentManager.GetEnvironments())
+        var result = GetEnvironments();
+
+        foreach (var environmentName in result.EnvironmentNames)
         {
-            Console.WriteLine(filePath);
+            Console.WriteLine(environmentName);
         }
     });
 
 app.AddCommand("edit", ([Argument] string environmentName) => 
     {
         Console.WriteLine($"open secrets file to edit {environmentName}");
-        UserSecretEnvironmentManager.EditEnvironment(environmentName);
+
+        var result = EditEnvironment(environmentName);
     });
 
-app.AddCommand("menu", () => 
+app.AddCommand("test-directory", () =>
     {
-        Console.WriteLine("┌ User Secret Environment Manager");
-        Console.WriteLine("| Use the arrow up and down keys to navigate. Enter to make a selection.");
-        Console.WriteLine("| Enter to make a selection.");
-        Console.WriteLine("| ");
-        Console.WriteLine("| Menu:");
+        Console.WriteLine("Current Directory: " + Environment.CurrentDirectory);
 
-        var menuIndex = 0;
+        string binDirectory = Directory.GetParent(Environment.CurrentDirectory)!.Parent!.FullName;
+        Console.WriteLine("bin directory: " + binDirectory);
 
-        (int left, int top) = Console.GetCursorPosition();
+        string projectDirectory = Directory.GetParent(Environment.CurrentDirectory)!.Parent!.Parent!.FullName;
+        Console.WriteLine("bin directory: " + projectDirectory);
+    })
+    .WithMetadata(new HiddenAttribute());
 
-        while (true)
-        {
-            Console.SetCursorPosition( left, top );
-
-            for (int i = 0; i < menuOptions.Length; i++)
-            {
-                var isCurrentSelection = menuIndex == i;
-                var visualSelection = menuIndex == i ? ">" : " ";
-                Console.WriteLine($"| {visualSelection} {menuOptions[i]}");
-            }
-
-            Console.WriteLine($"└");
-
-            var keyInfo = Console.ReadKey(true);
-
-            switch (keyInfo.Key)
-            {
-                case ConsoleKey.DownArrow:
-                    if (menuIndex < menuOptions.Length - 1) 
-                        menuIndex++;
-                    break;
-                case ConsoleKey.UpArrow:
-                    if (menuIndex > 0) 
-                        menuIndex--;
-                    break;
-                case ConsoleKey.Enter:
-                    Console.WriteLine($"User Chose to {menuOptions[menuIndex]}");
-                    //if (menuIndex == menuOptions.Length - 1)
-                        Environment.Exit(0);
-                    break;
-                case ConsoleKey.Escape:
-                    Environment.Exit(0);
-                    break;
-            }
-
-        }
-    });
+app.AddCommand("menu", () => UserSecretEnvironmentManagerMenu.Entry());
 
 app.Run();

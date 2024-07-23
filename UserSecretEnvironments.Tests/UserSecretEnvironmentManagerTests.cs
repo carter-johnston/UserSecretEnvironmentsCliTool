@@ -8,7 +8,7 @@ public class UserSecretEnvironmentManagerTests
     [TestMethod]
     public void Initialize_Test()
     {
-        UserSecretEnvironmentManager.Initialize();
+        UserSecretEnvironmentManager.InitializeDefaults();
     }
 
     [TestMethod]
@@ -29,7 +29,7 @@ public class UserSecretEnvironmentManagerTests
     public void Initialize_New_Environments_Test()
     {
         string[] environmentNames = { "staging" };
-        UserSecretEnvironmentManager.Initialize(environmentNames);
+        UserSecretEnvironmentManager.InitializeEnvironment(environmentNames);
     }
 
     [TestMethod]

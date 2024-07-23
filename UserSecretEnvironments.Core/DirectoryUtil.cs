@@ -4,11 +4,18 @@ public static class DirectoryUtil
 {
     public static string GetLocalProjectFilePath()
     {
-        // This will get the current PROJECT bin directory (ie ../bin/)
         string binDirectory = Directory.GetParent(Environment.CurrentDirectory)!.Parent!.FullName;
-
-        // This will get the current PROJECT directory
         string projectDirectory = Directory.GetParent(Environment.CurrentDirectory)!.Parent!.Parent!.FullName;
+
+        if (Directory.GetFiles(Environment.CurrentDirectory, "*.csproj").Length != 0)
+        {
+            return Directory.GetFiles(Environment.CurrentDirectory, "*.csproj").First();
+        }
+
+        if (Directory.GetFiles(binDirectory, "*.csproj").Length != 0)
+        {
+            return Directory.GetFiles(binDirectory, "*.csproj").First();
+        }
 
         return Directory.GetFiles(projectDirectory, "*.csproj").First();
     }
