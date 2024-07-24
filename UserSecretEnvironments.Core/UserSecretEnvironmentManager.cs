@@ -73,7 +73,16 @@ public class UserSecretEnvironmentManager
         return initializationResult;
     }
 
-    public static UserSecretEnvironmentOperationResult UseEnvironment(string? environmentName)
+    public class UseEnvironmentResult
+    {
+        public required UserSecretEnvironmentOperationResult OperationResult { get; set; }
+
+        public string? PreviousEnvironmentDirectory { get; set; }
+
+        public string? CurrentEnvironmentDirectory { get; set; }
+    }
+
+    public static UseEnvironmentResult UseEnvironment(string? environmentName)
     {
         var projectFile = DirectoryUtil.GetLocalProjectFilePath();
 
@@ -86,14 +95,17 @@ public class UserSecretEnvironmentManager
 
         if (userSecretId == null)
         {
-            return UserSecretEnvironmentOperationResult.UnableToFindUserSecrets;
+            return new UseEnvironmentResult
+            {
+                OperationResult = UserSecretEnvironmentOperationResult.UnableToFindUserSecrets,
+            };
         }
 
         var userSecretParentId = userSecretId.Split('_').First();
 
         var appDataPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
         
-        var selectedUserSecretValue = $"{userSecretParentId}_{environmentName}";
+        var selectedUserSecretValue = userSecretParentId;
         
         if (string.IsNullOrEmpty(environmentName))
         {
@@ -104,13 +116,21 @@ public class UserSecretEnvironmentManager
 
         if (!File.Exists(userSecretsPath))
         {
-            return UserSecretEnvironmentOperationResult.UnableToFindUserSecretsDirectory;
+            return new UseEnvironmentResult
+            {
+                OperationResult = UserSecretEnvironmentOperationResult.UnableToFindUserSecretsDirectory,
+            };
         }
 
         projectRootElement.AddProperty("UserSecretsId", selectedUserSecretValue);
         projectRootElement.Save();
 
-        return UserSecretEnvironmentOperationResult.Success;
+        return new UseEnvironmentResult
+        {
+            OperationResult = UserSecretEnvironmentOperationResult.Success,
+            PreviousEnvironmentDirectory = appDataPath + $"/Microsoft/UserSecrets/{userSecretId}/secrets.json",
+            CurrentEnvironmentDirectory = appDataPath + $"/Microsoft/UserSecrets/{selectedUserSecretValue}/secrets.json",
+        };
     }
 
     public static GetEnvironmentsResult GetEnvironments()
