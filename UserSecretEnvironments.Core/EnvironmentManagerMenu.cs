@@ -2,7 +2,7 @@
 
 namespace UserSecretEnvironments.Core;
 
-public static class UserSecretEnvironmentManagerMenu
+public static class EnvironmentManagerMenu
 {
    private enum MenuSelection
     {
@@ -22,7 +22,7 @@ public static class UserSecretEnvironmentManagerMenu
         ("Exit.", MenuSelection.Exit)
     ];
 
-    public static void Entry()
+    public static void Run()
     {
         var menuIndex = 0;
 
@@ -102,7 +102,7 @@ public static class UserSecretEnvironmentManagerMenu
         // Get list of environments
         // Display a menu to select an environment
         // User selects an env
-        UserSecretEnvironmentManager.EditEnvironment("Qa");
+        EnvironmentManager.EditEnvironment("Qa");
     }
 
     private static void List()
@@ -116,12 +116,12 @@ public static class UserSecretEnvironmentManagerMenu
         // Get list of environments
         // Display a menu to select an environment
         // User Selects env
-        var result = UserSecretEnvironmentManager.UseEnvironment("Qa");
+        var result = EnvironmentManager.UseEnvironment("Qa");
     }
 
     private static void Initialize()
     {
         // Let user input environment names
-        UserSecretEnvironmentManager.InitializeDefaultEnvironments();
+        EnvironmentManager.InitializeDefaultEnvironments();
     }
 }
