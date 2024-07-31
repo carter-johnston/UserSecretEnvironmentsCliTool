@@ -16,17 +16,15 @@ public class EnvironmentManagerCommands
             ? EnvironmentManager.InitializeEnvironments(environmentNames!)
             : EnvironmentManager.InitializeDefaultEnvironments();
 
-        if (!result.OperationResult.Equals(OperationType.Success))
+        if (!result.OperationResult.Equals(OperationStatus.Success))
         {
             AnsiConsole.MarkupLine($"[yellow]{result.ErrorMessage}[/]");
             return;
         }
 
-        Console.WriteLine("New user secret environments created:");
-
-        foreach (var createdEnvironmentDirectories in result.EnvironmentDirectories)
+        foreach (var userSecretEnvironment in result.UserSecretEnvironments)
         {
-            AnsiConsole.MarkupLine($"[green]{createdEnvironmentDirectories}[/]");
+            AnsiConsole.MarkupLine($"[green]{userSecretEnvironment.Name} {userSecretEnvironment.FilePath}[/]");
         }
     }
 
@@ -42,7 +40,7 @@ public class EnvironmentManagerCommands
     {
         var result = EnvironmentManager.UseEnvironment(environmentName);
 
-        if (!result.OperationResult.Equals(OperationType.Success))
+        if (!result.OperationResult.Equals(OperationStatus.Success))
         {
             AnsiConsole.MarkupLine($"[yellow]{result.ErrorMessage}[/]");
             return;
@@ -52,11 +50,11 @@ public class EnvironmentManagerCommands
     }
 
     [Command("list")]
-    public void ListAllEnvironmentsByProject()
+    public void ListAllEnvironments()
     {
         var result = EnvironmentManager.GetEnvironments();
 
-        if (!result.OperationResult.Equals(OperationType.Success))
+        if (!result.OperationResult.Equals(OperationStatus.Success))
         {
             AnsiConsole.MarkupLine($"[yellow]{result.ErrorMessage}[/]");
             return;
@@ -66,7 +64,7 @@ public class EnvironmentManagerCommands
         
         foreach (var environmentDirectory in result.UserSecretEnvironments)
         {
-            AnsiConsole.MarkupLine($"[green]{environmentDirectory}[/]");
+            AnsiConsole.MarkupLine($"* [green]{environmentDirectory.Name} {environmentDirectory.FilePath}[/]");
         }
     }
 
@@ -77,7 +75,7 @@ public class EnvironmentManagerCommands
 
         var result = EnvironmentManager.EditEnvironment(environmentName);
 
-        if (!result.Equals(OperationType.Success))
+        if (!result.Equals(OperationStatus.Success))
         {
             AnsiConsole.MarkupLine("[yellow]Unable to find a usersecrets file to open.[/]");
         }

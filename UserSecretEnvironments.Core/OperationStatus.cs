@@ -1,6 +1,6 @@
 ﻿namespace UserSecretEnvironments.Core
 {
-    public enum OperationType
+    public enum OperationStatus
     {
         Success,
         Failure,
