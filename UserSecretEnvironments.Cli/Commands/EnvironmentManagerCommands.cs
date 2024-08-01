@@ -50,7 +50,7 @@ public class EnvironmentManagerCommands
     }
 
     [Command("list")]
-    public void ListAllEnvironments()
+    public static void ListAllEnvironments()
     {
         var result = EnvironmentManager.GetEnvironments();
 
@@ -61,15 +61,16 @@ public class EnvironmentManagerCommands
         }
 
         Console.WriteLine();
-        
         foreach (var environmentDirectory in result.UserSecretEnvironments)
         {
             AnsiConsole.MarkupLine($"* [green]{environmentDirectory.Name} {environmentDirectory.FilePath}[/]");
         }
+
+        Console.WriteLine();
     }
 
     [Command("edit")]
-    public void EditUserSecretsFile([Argument] string environmentName)
+    public static void EditUserSecretsFile([Argument] string environmentName)
     {
         AnsiConsole.MarkupLine($"Opening [white][[[green]{environmentName}[/]]][/] secrets file to edit.");
 
