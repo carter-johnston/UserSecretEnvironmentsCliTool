@@ -71,7 +71,7 @@ public class EnvironmentManagerCommands
     [Command("edit")]
     public void EditUserSecretsFile([Argument] string environmentName)
     {
-        Console.WriteLine($"Opening [white][[[green]{environmentName}[/]]][/] secrets file to edit.");
+        AnsiConsole.MarkupLine($"Opening [white][[[green]{environmentName}[/]]][/] secrets file to edit.");
 
         var result = EnvironmentManager.EditEnvironment(environmentName);
 

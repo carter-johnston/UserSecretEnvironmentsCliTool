@@ -130,9 +130,9 @@ public class EnvironmentManager
         }
 
         var appDataPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
-        var userSecretsEnvironmentPath = appDataPath + $"/Microsoft/UserSecrets/{getUserSecretIdResult.UserSecretsId}/{environmentName}.json";
+        var userSecretsEnvironmentPath = appDataPath + $"/Microsoft/UserSecrets/{getUserSecretIdResult.UserSecretsId}/{environmentName.ToUpper()}.json";
 
-        if (!Directory.Exists(userSecretsEnvironmentPath))
+        if (!File.Exists(userSecretsEnvironmentPath))
         {
             return OperationStatus.UnableToFindUserSecretsDirectory;
         }
